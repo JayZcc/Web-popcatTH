@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Popcat Game + Leaderboard</title>
+  <!-- ปิดการซูมบนมือถือ -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    body{
+      margin:0;
+      font-family:sans-serif;
+      background:#6a0dad;
+      color:white;
+      text-align:center;
+    }
+    h1{margin:20px 0;}
+    .score{font-size:2em;margin-bottom:10px;}
+    img{
+      width:220px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-drag: none;
+      touch-action: manipulation; /* กัน pinch/double tap zoom */
+      transition:0.1s;
+    }
+    img:active{transform:scale(0.95);}
+    select{
+      margin:10px;
+      padding:6px 10px;
+      border-radius:6px;
+      font-size:16px;
+    }
+    table{
+      border-collapse:collapse;
+      width:90%;
+      max-width:600px;
+      margin:20px auto;
+      background:#fff;
+      color:#222;
+      border-radius:8px;
+      overflow:hidden;
+    }
+    th,td{padding:10px 14px;text-align:left;}
+    th{background:#eee;}
+    tr:nth-child(even){background:#fafafa;}
+    .country{display:flex;align-items:center;gap:8px;}
+    .country img{width:24px;height:16px;object-fit:cover;}
+  </style>
+</head>
+<body>
+
+   <h1>⚔️ POPCAT
+🇹🇭 VS      🇰🇭 🗡️</h1>
+  <div>เลือกประเทศของคุณ|
+ជ្រើសរើសប្រទេសរបស់អ្នក។:</div>
+  <select id="countrySelect">
+	<option value="">🇹🇭🇰🇭?????</option>
+    <option value="Thailand🇹🇭">🇹🇭 Thailand</option>
+
+    <option value="Cambodia🇰🇭">🇰🇭 Cambodia</option>
+    
+  </select>
+
+  <div class="score">score: 0</div>
+  <img id="cat" src="https://popcat.click/img/popcat.png" alt="Pop Cat">
+  <audio id="sound" src="https://www.myinstants.com/media/sounds/pop-cat-original.mp3"></audio>
+
+  <h2>🌍 คะแนนระดับประเทศ ការវាយតម្លៃជាតិ</h2>
+  <table id="leaderboard">
+    <thead>
+      <tr><th>#</th><th>ประเทศ ប្រទេស</th><th>คะแนนรวม ពិន្ទុសរុប</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const cat = document.getElementById("cat");
+    const scoreEl = document.querySelector(".score");
+    const sound = document.getElementById("sound");
+    const countrySelect = document.getElementById("countrySelect");
+    const tbody = document.querySelector("#leaderboard tbody");
+
+    let myScore = 0;
+    let open = false;
+
+    // 📌 ฝังคะแนนประเทศไว้ตรงนี้
+    // ทุกครั้งที่โหลดใหม่ จะกลับไปเริ่มจากค่าพวกนี้
+    let countries = {
+      "Thailand🇹🇭": 0,
+      
+      
+      "Cambodia🇰🇭": 0
+    };
+
+    const catClosed = "https://cdn.discordapp.com/attachments/1403434383058403536/1406994419995119646/IMG_1621.jpg?ex=68a47d2a&is=68a32baa&hm=cd2ea756f4ff92394fa933d0ab35c5a30315e584f55810f9c33fcd7338a20590&";
+    const catOpen   = "https://cdn.discordapp.com/attachments/1403434383058403536/1406994425716150394/IMG_1622.jpg?ex=68a47d2b&is=68a32bab&hm=6a405dc063188c6768c5c4b6136e9c8f694bf4a4b755de4f497c77db66c1570a&";
+
+    function updateTable(){
+      let entries = Object.entries(countries);
+      entries.sort((a,b)=>b[1]-a[1]); 
+      tbody.innerHTML = "";
+      entries.forEach((item,idx)=>{
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${idx+1}</td>
+          <td class="country">${item[0]}</td>
+          <td>${item[1].toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    updateTable();
+
+    cat.addEventListener("click", ()=>{
+      myScore++;
+      scoreEl.textContent = "score: " + myScore;
+
+      sound.currentTime = 0;
+      sound.play();
+
+      let c = countrySelect.value;
+      countries[c] += 1; // เพิ่มเฉพาะตอนเล่น
+      updateTable();
+
+      if(!open){
+        cat.src = catOpen;
+        open = true;
+        setTimeout(()=>{
+          cat.src = catClosed;
+          open = false;
+        }, 150);
+      }
+    });
+  </script>
+</body>
+</html>
