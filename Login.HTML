@@ -1,137 +1,246 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>Popcat Game + Leaderboard</title>
-  <!-- ปิดการซูมบนมือถือ -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    body{
-      margin:0;
-      font-family:sans-serif;
-      background:#6a0dad;
-      color:white;
-      text-align:center;
-    }
-    h1{margin:20px 0;}
-    .score{font-size:2em;margin-bottom:10px;}
-    img{
-      width:220px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-user-drag: none;
-      touch-action: manipulation; /* กัน pinch/double tap zoom */
-      transition:0.1s;
-    }
-    img:active{transform:scale(0.95);}
-    select{
-      margin:10px;
-      padding:6px 10px;
-      border-radius:6px;
-      font-size:16px;
-    }
-    table{
-      border-collapse:collapse;
-      width:90%;
-      max-width:600px;
-      margin:20px auto;
-      background:#fff;
-      color:#222;
-      border-radius:8px;
-      overflow:hidden;
-    }
-    th,td{padding:10px 14px;text-align:left;}
-    th{background:#eee;}
-    tr:nth-child(even){background:#fafafa;}
-    .country{display:flex;align-items:center;gap:8px;}
-    .country img{width:24px;height:16px;object-fit:cover;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Draw 8 ช่อง</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0b0f1a url('https://i.ibb.co/Q3LcT7v0/ebf87a03711596d16b393d719b4ecac1.jpg') no-repeat center center;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    flex-direction: column;
+  }
+  .logo {
+    width: 200px;
+    margin-bottom: 10px;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .cell {
+    background: #222;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: 0.2s;
+  }
+  .cell img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+  .cell.active {
+    background: #f6c84c;
+    transform: scale(1.1);
+  }
+  .center {
+    background: #000;
+    border: 2px solid #999;
+  }
+  .center img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+  .controls {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .btn {
+    background: #c62828;
+    border: none;
+    padding: 12px 24px;
+    margin: 5px;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn:hover {
+    background: #a32222;
+  }
+  .result {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 18px;
+  }
+  .result img {
+    margin-top: 10px;
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border: 2px solid #fff;
+    border-radius: 8px;
+  }
+  .name-input {
+    margin-bottom: 10px;
+  }
+  .name-input input {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+  }
+</style>
 </head>
 <body>
 
-   <h1>⚔️ POPCAT
-🇹🇭 VS      🇰🇭 🗡️</h1>
-  <div>เลือกประเทศของคุณ|
-ជ្រើសរើសប្រទេសរបស់អ្នក។:</div>
-  <select id="countrySelect">
-	<option value="">🇹🇭🇰🇭?????</option>
-    <option value="Thailand🇹🇭">🇹🇭 Thailand</option>
+  <!-- โลโก้บนเว็บ -->
+  <img src="https://i.ibb.co/FkJCb3FN/Photoroom-25680907-182211.png" alt="โลโก้เว็บ" class="logo">
 
-    <option value="Cambodia🇰🇭">🇰🇭 Cambodia</option>
-    
-  </select>
+  <!-- ช่องใส่ชื่อผู้เล่น -->
+  <div class="name-input">
+    <label for="playerName">ชื่อผู้เล่น: </label>
+    <input type="text" id="playerName" placeholder="กรอกชื่อผู้เล่น">
+  </div>
 
-  <div class="score">score: 0</div>
-  <img id="cat" src="https://popcat.click/img/popcat.png" alt="Pop Cat">
-  <audio id="sound" src="https://www.myinstants.com/media/sounds/pop-cat-original.mp3"></audio>
+  <!-- ตารางสุ่ม -->
+  <div class="board">
+    <div class="cell" id="c0"><img src="https://i.ibb.co/qYfwzJqZ/30-20250907170216.png"></div>
+    <div class="cell" id="c1"><img src="https://i.ibb.co/1GfSBP07/30-20250906200045.png"></div>
+    <div class="cell" id="c2"><img src="https://i.ibb.co/1GfSBP07/30-20250906200045.png"></div>
+    <div class="cell" id="c7"><img src="https://i.ibb.co/1GfSBP07/30-20250906200045.png"></div>
+    <div class="cell center"><img src="https://i.ibb.co/FkJCb3FN/Photoroom-25680907-182211.png"></div>
+    <div class="cell" id="c3"><img src="https://i.ibb.co/1GfSBP07/30-20250906200045.png"></div>
+    <div class="cell" id="c6"><img src="https://i.ibb.co/1GfSBP07/30-20250906200045.png"></div>
+    <div class="cell" id="c5"><img src=" https://i.ibb.co/1GfSBP07/30-20250906200045.png  "></div>
+    <div class="cell" id="c4"><img src="https://i.ibb.co/qYfwzJqZ/30-20250907170216.png"></div>
+  </div>
 
-  <h2>🌍 คะแนนระดับประเทศ ការវាយតម្លៃជាតិ</h2>
-  <table id="leaderboard">
-    <thead>
-      <tr><th>#</th><th>ประเทศ ប្រទេស</th><th>คะแนนรวม ពិន្ទុសរុប</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- ปุ่มสุ่ม -->
+  <div class="controls">
+    <button class="btn" onclick="spin(1)">สุ่ม x1</button>
+    <button class="btn" onclick="spin(5)">สุ่ม x5</button>
+  </div>
 
-  <script>
-    const cat = document.getElementById("cat");
-    const scoreEl = document.querySelector(".score");
-    const sound = document.getElementById("sound");
-    const countrySelect = document.getElementById("countrySelect");
-    const tbody = document.querySelector("#leaderboard tbody");
+  <!-- แสดงผลรางวัล -->
+  <div class="result" id="result"></div>
 
-    let myScore = 0;
-    let open = false;
+  <!-- เพลงพื้นหลังและเสียงสุ่ม -->
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay loop></audio>
+  <audio id="spinSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
-    // 📌 ฝังคะแนนประเทศไว้ตรงนี้
-    // ทุกครั้งที่โหลดใหม่ จะกลับไปเริ่มจากค่าพวกนี้
-    let countries = {
-      "Thailand🇹🇭": 0,
-      
-      
-      "Cambodia🇰🇭": 0
-    };
+<script>
+const order = [0,1,2,3,4,5,6,7];
+const weights = [5, 20, 30, 20, 5, 40, 40, 30];
+let spinning = false;
 
-    const catClosed = "https://cdn.discordapp.com/attachments/1403434383058403536/1406994419995119646/IMG_1621.jpg?ex=68a47d2a&is=68a32baa&hm=cd2ea756f4ff92394fa933d0ab35c5a30315e584f55810f9c33fcd7338a20590&";
-    const catOpen   = "https://cdn.discordapp.com/attachments/1403434383058403536/1406994425716150394/IMG_1622.jpg?ex=68a47d2b&is=68a32bab&hm=6a405dc063188c6768c5c4b6136e9c8f694bf4a4b755de4f497c77db66c1570a&";
+const messages = [
+  "ได้ยศฟรีแคปแล้วแจ้งแอดมิน",
+  "เกลือ",
+  "เกลือ",
+  "เกลือ",
+  "ได้ยศฟรีแคปแล้วแจ้งแอดมิน",
+  "เกลือ",
+  "เกลือ",
+  "เกลือ"
+];
 
-    function updateTable(){
-      let entries = Object.entries(countries);
-      entries.sort((a,b)=>b[1]-a[1]); 
-      tbody.innerHTML = "";
-      entries.forEach((item,idx)=>{
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${idx+1}</td>
-          <td class="country">${item[0]}</td>
-          <td>${item[1].toLocaleString()}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+const webhookURL = "https://discord.com/api/webhooks/1413144385331269864/82ukWuqb8RTwiH6NsLkEPUhMn9XAh-E6VLVH8dyujtztxwze1bMLd_UCNiiiydSMZ1_d";
 
-    updateTable();
+// ตรวจสอบมือถือ
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
-    cat.addEventListener("click", ()=>{
-      myScore++;
-      scoreEl.textContent = "score: " + myScore;
+// ดึงชื่อผู้เล่นจาก input หรือ LocalStorage
+function getPlayerName(){
+  const input = document.getElementById("playerName");
+  let name = input.value || localStorage.getItem("playerName") || "ผู้เล่นไม่ระบุ";
+  input.value = name;
+  localStorage.setItem("playerName", name);
+  return name;
+}
 
-      sound.currentTime = 0;
-      sound.play();
+function highlight(index){
+  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('active'));
+  if(index !== null){
+    document.getElementById('c'+index).classList.add('active');
+  }
+}
 
-      let c = countrySelect.value;
-      countries[c] += 1; // เพิ่มเฉพาะตอนเล่น
-      updateTable();
+function weightedRandom(){
+  let total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random() * total;
+  let sum = 0;
+  for(let i=0;i<weights.length;i++){
+    sum += weights[i];
+    if(r < sum) return i;
+  }
+  return 0;
+}
 
-      if(!open){
-        cat.src = catOpen;
-        open = true;
-        setTimeout(()=>{
-          cat.src = catClosed;
-          open = false;
-        }, 150);
+function sendToDiscord(index){
+  const name = getPlayerName();
+  const img = document.querySelector(`#c${index} img`).src;
+  const message = messages[index];
+  const data = {
+    content: `🎉 ผู้เล่น: ${name} ได้รางวัล: ${message}`,
+    embeds: [{ image: { url: img } }]
+  };
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+}
+
+function showResult(index){
+  const img = document.querySelector(`#c${index} img`).src;
+  const message = messages[index];
+  document.getElementById("result").innerHTML = `${message} <br><img src="${img}">`;
+  alert(message);
+  sendToDiscord(index);
+}
+
+function spin(times){
+  if(!isMobile()){
+    alert("เกมนี้เล่นได้เฉพาะมือถือเท่านั้น!");
+    return;
+  }
+  if(spinning) return;
+  spinning = true;
+
+  const sound = document.getElementById('spinSound');
+  sound.currentTime = 0;
+  sound.play();
+
+  let count = 0;
+  function doSpin(){
+    let target = weightedRandom(); 
+    let steps = order.length*3 + target; 
+    let pos = 0;
+    let interval = setInterval(()=>{
+      highlight(order[pos % order.length]);
+      pos++;
+      if(pos>steps){
+        clearInterval(interval);
+        showResult(target);
+        sound.pause();
+        sound.currentTime = 0;
+        count++;
+        if(count<times){
+          setTimeout(doSpin, 600);
+        } else {
+          spinning=false;
+        }
       }
-    });
-  </script>
+    },120);
+  }
+  doSpin();
+}
+</script>
 </body>
 </html>
